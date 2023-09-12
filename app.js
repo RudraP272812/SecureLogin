@@ -1,4 +1,4 @@
-require('dotenv').config();
+import 'dotenv/config';
 import express from "express"
 import bodyParser from"body-parser"
 import path from "path"
@@ -14,7 +14,7 @@ app.use(express.static("public"));
 //connect to local database
 // const URI = "mongodb://127.0.0.1:27017/LoginData";
 const URI = "mongodb+srv://rp:Rp2812@rpdb.ir2vbdv.mongodb.net/?retryWrites=true&w=majority";
-
+// console.log('Secret API Key:', process.env.SECRET_API);
 mongoose.connect(URI,{useNewUrlParser : true}).then(() => console.log('Connected!')).catch((error)=>{
     console.log('error');
   });
@@ -30,8 +30,8 @@ const UserData = new mongoose.Schema({
   });
 
 
-  const secreat = "this is my secreat";
-  UserData.plugin(encrypt,{secret:secreat,encryptedFields:["Password"]});
+  // const secreat = "this is my secreat";
+  UserData.plugin(encrypt,{secret: process.env.SECRET_API,encryptedFields:["Password"]});
   const User = mongoose.model("User",UserData);//database name
   
 app.get("/",function(req,res){
