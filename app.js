@@ -4,7 +4,8 @@ import bodyParser from"body-parser"
 import path from "path"
 import ejs from "ejs"
 import mongoose from"mongoose"
-import encrypt from"mongoose-encryption"
+// import encrypt from"mongoose-encryption"  this is for level 2 security
+import md5 from "md5" //level 3
 import { Console } from "console"
 const app = express();
 app.set('view engine', 'ejs');
@@ -30,8 +31,8 @@ const UserData = new mongoose.Schema({
   });
 
 
-  // const secreat = "this is my secreat";
-  UserData.plugin(encrypt,{secret: process.env.SECRET_API,encryptedFields:["Password"]});
+  // const secreat = "this is my secreat"; level 1
+  // UserData.plugin(encrypt,{secret: process.env.SECRET_API,encryptedFields:["Password"]}); this if for level 2
   const User = mongoose.model("User",UserData);//database name
   
 app.get("/",function(req,res){
@@ -49,10 +50,8 @@ app.get("/login",function(req,res){
 app.post("/login", async function(req, res) {
     const Check = {
       useremail: req.body.username,
-      Password: req.body.password
+      Password: md5(req.body.password) //md5 used for level 3
     };
-    // console.log(Check.useremail);
-    // console.log(Check.Password);
     try {
       const founduser = await User.findOne({ email: Check.useremail });
       if(founduser.Password!= null){
@@ -79,7 +78,7 @@ app.get("/register",function(req,res){
 app.post("/register", async function (req, res) {
     const newUser = new User({
       email: req.body.username,
-      Password: req.body.password,
+      Password: md5(req.body.password),
     });
   
     try {
