@@ -66,10 +66,15 @@ app.get("/login",function(req,res){
     
 });
 
-app.get("/logout",function(req,res){
-  res.render("login");
-  
+app.get("/logout", function (req, res) {
+  req.logout(function(err) {
+    if (err) {
+      console.log(err);
+    }
+    res.redirect("/"); // Redirect to the home page or another appropriate page
+  });
 });
+
 
 
 app.post("/login", async function(req, res) {
@@ -97,11 +102,20 @@ app.post("/login", async function(req, res) {
     //   console.log(err);
     //   // Handle the error appropriately, e.g., show an error page to the user.
     // }
-    res.render("login");
-
-
-
-  });
+    const user = new User({
+      username: req.body.username,
+      password: req.body.password
+    });
+    req.login(user,function(err){
+      if(err){
+        console.log(err);
+      }
+      else{
+        passport.authenticate("local")
+        res.redirect("secrets")
+      }
+    })
+   });
 
 
 app.get("/register",function(req,res){
